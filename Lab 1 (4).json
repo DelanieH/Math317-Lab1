@@ -1,0 +1,177 @@
+{
+  "metadata": {
+    "language_info": {
+      "codemirror_mode": {
+        "name": "python",
+        "version": 3
+      },
+      "file_extension": ".py",
+      "mimetype": "text/x-python",
+      "name": "python",
+      "nbconvert_exporter": "python",
+      "pygments_lexer": "ipython3",
+      "version": "3.8"
+    },
+    "kernelspec": {
+      "name": "python",
+      "display_name": "Python (Pyodide)",
+      "language": "python"
+    }
+  },
+  "nbformat_minor": 4,
+  "nbformat": 4,
+  "cells": [
+    {
+      "cell_type": "code",
+      "source": "# Part 1\nfrom math import sqrt\ndef naivelog(x):\n  #n=15\n    n=20\n  y = x\n  for i in range(n):\n    #print(\"3\")\n    y = sqrt(y)\n    #print(y)\n  l = y-1\n  for i in range(n):\n    #print(l)\n    l = l*2\n  return l",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "from math import sqrt\ndef mylog(x):\n  #n=15\n    n = 20\n  z = x-1\n  for i in range(n):\n    #print(z)\n    z = z/(1+ sqrt(1+z))\n  l = z\n  for i in range(n):\n    #print(l)\n    l = l*2\n  return l",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "#Q1\n# How naivelog works:\n    # Naivelog starts by taking a varible x as input. It sets y as the intial variable and uses n as a counter, where n=15. \n    # It then steps into a loop. Setting y = y^0.5. This loop will continue 15 times before ending. By the end of the loop, the y value should be equal to the intial y variable to the power of 0.5^15.\n    # Set a new vairble l equal to your y varible minus 1.\n    # then step into a new loop, for 15 iterations. On each iteration, set l equal to l times 2. By the end, your l varible will be equal to your intial l vairble minus one times 2^15.\n    # the function then returns the variable l, which is your log of x. In terms of your input x, the returned varible l is equal to ((x^(0.5^15)) - 1)(2^15).\n# in the case x=0: your varible y will always be equal to 0, since 0^0.5=0. Thus once you enter into the second loop, l will be a negative number as y-1<0.\n    # this causes you to end up with a large negative value returned, -32768 to be excat, once the loop is ended.\n# in the case x=1: your varible y will always be equal to 1 as 1^0.5=1. Thus once you enter into the second loop, l will be constantly be equal to 0 as 1-1=0 and 0*2=0. \n    # thus you will end naivelog(1) with the returned value of 0.\n",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": 80,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "#Q1 Cont.\n# How mylog works:\n    # mylog starts by taking a varible x as input. It sets z as equal to the intial varible minus 1 and uses n as a counter, where n =15.\n    # It then steps into a loop. Setting z eqaul to the intial z over 1 plus the sqaure root of 1 plus the intial z. \n    # One the second iteration, z will be equal to the previous z over 1 plus the square root of 1 plu the previous z. It will continue this 15 times.\n    # Over the 15 iteration, the loop ends and then sets the varible l equal to the current value of z.\n    # It then enters into another loop, where it resets the value of l equal to the previous l times 2. It will finish on the 15th iteration, such that l equals the intial value of l time 2 to the power of 15.\n    # the function then returns l.\n# In the case x=1: z will constantly be equal to 0 as z=1-1=0 and \n    # letting z0 denote the first iteration of the first loop, then z1 the second, etc. then we can see z0= 0/1+(1+0)^0.5=0, z1=0/1+(1+0)^0.5=0, and so on..\n    # Because of this, l intially equals 0 and stays 0 as 0*2^15=0. Thus this function will return 0.\n# In the case x=0: z will constantly be equal to -1 as, z=0-1=-1 and \n    # letting z0 denote the first iteration of the first loop, then z1 the second, etc. then we can see z0 = -1/1+(-1+1)^0.5=-1/1+0=-1 => z1= -1/1+(-1+1)^0.5=-1 and so on...\n    # Because of this l intially equals -1 but then quickly becomes a large negative value as -1*2>0. Thus the returned value is equal to -1*2^15=-32768.",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": 81,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "#Q2\nfrom math import log\n# a function that compares the error to the math.log function\ndef error(x):\n    y = naivelog(x)\n    z = mylog(x)\n    a = log(x)\n    #a = float(a)\n    if a == 0.0:\n        # case of log(1)=0\n        y = (a-y)\n        z = (a-z)\n    else:\n        y = (a-y)/a\n        z = (a-z)/a\n    print(\"The error when x =\", x, \"of naivelog is\", y, \"and mylog is\", z)\n\n\ndef compare(x):\n    print(\"The log of\", x, \"using naivelog is\", naivelog(x))\n    print(\"The log of\", x, \"using mylog is\", mylog(x))\n    print(\"The log of\", x, \"using log is\", log(x))\n    print(error(x))\n\n        \n#comparing values using different functions\ncompare(1)\n# The error when x = 1 of naivelog is 0.0 and mylog is 0.0\ncompare(2)\n# The error when x = 2 of naivelog is -1.0576657730874648e-05 and mylog is -1.0576661194259212e-05\ncompare(3)\n# The error when x = 3 of naivelog is -1.676368225141e-05 and mylog is -1.6763680518891284e-05\ncompare(4)\n# The error when x = 4 of naivelog is -2.115347004357575e-05 and mylog is -2.1153471542779354e-05\ncompare(5)\n# The error when x = 5 of naivelog is -2.4558476945860943e-05 and mylog is -2.4558475686524914e-05\ncompare(6)\n# The error when x = 6 of naivelog is -2.7340578392159324e-05 and mylog is -2.734057811865585e-05\ncompare(7)\n# The error when x = 7 of naivelog is -2.969282024051652e-05 and mylog is -2.969282025991494e-05\ncompare(8)\n# The error when x = 8 of naivelog is -3.173043281315778e-05 and mylog is -3.173043104806978e-05\ncompare(9)\n# The error when x = 9 of naivelog is -3.352773554054036e-05 and mylog is -3.352773573355895e-05\ncompare(10)\n# The error when x = 10 of naivelog is -3.5135483212689434e-05 and mylog is -3.5135483209410725e-05\ncompare(11)\n# The error when x = 11 of naivelog is -3.658987086649693e-05 and mylog is -3.6589870679630544e-05\ncompare(12)\n# The error when x = 12 of naivelog is -3.791762394640375e-05 and mylog is -3.791762487679219e-05\ncompare(13)\n# The error when x = 13 of naivelog is -3.9139041748159447e-05 and mylog is -3.913904241196906e-05\ncompare(14)\n# The error when x = 14 of naivelog is -4.02698992625724e-05 and mylog is -4.0269900190612864e-05",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": 123,
+      "outputs": [
+        {
+          "name": "stdout",
+          "text": "The log of 1 using naivelog is 0.0\nThe log of 1 using mylog is 0.0\nThe log of 1 using log is 0.0\nThe error when x = 1 of naivelog is 0.0 and mylog is 0.0\nNone\nThe log of 2 using naivelog is 0.6931545117404312\nThe log of 2 using mylog is 0.6931545117428318\nThe log of 2 using log is 0.6931471805599453\nThe error when x = 2 of naivelog is -1.0576657730874648e-05 and mylog is -1.0576661194259212e-05\nNone\nThe log of 3 using naivelog is 1.0986307054554345\nThe log of 3 using mylog is 1.0986307054535311\nThe log of 3 using log is 1.0986122886681098\nThe error when x = 3 of naivelog is -1.676368225141e-05 and mylog is -1.6763680518891284e-05\nNone\nThe log of 4 using naivelog is 1.38632368605613\nThe log of 4 using mylog is 1.3863236860582084\nThe log of 4 using log is 1.3862943611198906\nThe error when x = 4 of naivelog is -2.115347004357575e-05 and mylog is -2.1153471542779354e-05\nNone\nThe log of 5 using naivelog is 1.6094774377779686\nThe log of 5 using mylog is 1.6094774377759418\nThe log of 5 using log is 1.6094379124341003\nThe error when x = 5 of naivelog is -2.4558476945860943e-05 and mylog is -2.4558475686524914e-05\nNone\nThe log of 6 using naivelog is 1.7918084569682833\nThe log of 6 using mylog is 1.7918084569677932\nThe log of 6 using log is 1.791759469228055\nThe error when x = 6 of naivelog is -2.7340578392159324e-05 and mylog is -2.734057811865585e-05\nNone\nThe log of 7 using naivelog is 1.9459679286155733\nThe log of 7 using mylog is 1.945967928615611\nThe log of 7 using log is 1.9459101490553132\nThe error when x = 7 of naivelog is -2.969282024051652e-05 and mylog is -2.969282025991494e-05\nNone\nThe log of 8 using naivelog is 2.079507523259963\nThe log of 8 using mylog is 2.0795075232562925\nThe log of 8 using log is 2.0794415416798357\nThe error when x = 8 of naivelog is -3.173043281315778e-05 and mylog is -3.173043104806978e-05\nNone\nThe log of 9 using naivelog is 2.1972982453007717\nThe log of 9 using mylog is 2.1972982453011958\nThe log of 9 using log is 2.1972245773362196\nThe error when x = 9 of naivelog is -3.352773554054036e-05 and mylog is -3.352773573355895e-05\nNone\nThe log of 10 using naivelog is 2.3026659954339266\nThe log of 10 using mylog is 2.302665995433919\nThe log of 10 using log is 2.302585092994046\nThe error when x = 10 of naivelog is -3.5135483212689434e-05 and mylog is -3.5135483209410725e-05\nNone\nThe log of 11 using naivelog is 2.3979830114767537\nThe log of 11 using mylog is 2.3979830114763057\nThe log of 11 using log is 2.3978952727983707\nThe error when x = 11 of naivelog is -3.658987086649693e-05 and mylog is -3.6589870679630544e-05\nNone\nThe log of 12 using naivelog is 2.485000871543889\nThe log of 12 using mylog is 2.485000871546201\nThe log of 12 using log is 2.4849066497880004\nThe error when x = 12 of naivelog is -3.791762394640375e-05 and mylog is -3.791762487679219e-05\nNone\nThe log of 13 using naivelog is 2.5650497471215203\nThe log of 13 using mylog is 2.565049747123223\nThe log of 13 using log is 2.5649493574615367\nThe error when x = 13 of naivelog is -3.9139041748159447e-05 and mylog is -3.913904241196906e-05\nNone\nThe log of 14 using naivelog is 2.63916360418807\nThe log of 14 using mylog is 2.6391636041905193\nThe log of 14 using log is 2.6390573296152584\nThe error when x = 14 of naivelog is -4.02698992625724e-05 and mylog is -4.0269900190612864e-05\nNone\n",
+          "output_type": "stream"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": "#Q2 cont.\nfrom math import sqrt\n# the same functions from Q1 just with an extra imput which allows the user to change the iteration number, n.\ndef naivelog2(x, n):\n  y = x\n  for i in range(n):\n    y = sqrt(y)\n  l = y-1\n  for i in range(n):\n    l = l*2\n  return l\n\ndef mylog2(x, n):\n  z = x-1\n  for i in range(n):\n    z = z/(1+ sqrt(1+z))\n  l = z\n  for i in range(n):\n    l = l*2\n  return l\n\ndef error2(x, n):\n    y = naivelog2(x, n)\n    z = mylog2(x, n)\n    a = log(x)\n    #a = float(a)\n    if a == 0.0:\n        # case of log(1)=0\n        y = (a-y)\n        z = (a-z)\n    else:\n        y = (a-y)/a\n        z = (a-z)/a\n    print(\"The error when x =\", x, \"and n =\", n, \"of naivelog is\", y, \"and mylog is\", z)\n    return\n\n\ndef compare2(x, n):\n    print(\"The log of\", x, \"using naivelog when n =\", n, \"is\", naivelog2(x, n))\n    print(\"The log of\", x, \"using mylog when n =\", n, \"is\", mylog2(x, n))\n    print(\"The log of\", x, \"using log is\", log(x))\n    print(error2(x, n))\n    return\n\n# n = 20\ncompare2(1, 20)\ncompare2(2, 20)\ncompare2(3, 20)\ncompare2(4, 20)\ncompare2(5, 20)\ncompare2(6, 20)\ncompare2(7, 20)\ncompare2(8, 20)\ncompare2(9, 20)\ncompare2(10, 20)\ncompare2(11, 20)\ncompare2(12, 20)\ncompare2(13, 20)\ncompare2(14, 20)\n# n = 25\ncompare2(1, 25)\ncompare2(2, 25)\ncompare2(3, 25)\ncompare2(4, 25)\ncompare2(5, 25)\ncompare2(6, 25)\ncompare2(7, 25)\ncompare2(8, 25)\ncompare2(9, 25)\ncompare2(10, 25)\ncompare2(11, 25)\ncompare2(12, 25)\ncompare2(13, 25)\ncompare2(14, 25)\n# n = 30\ncompare2(1, 30)\ncompare2(2, 30)\ncompare2(3, 30)\ncompare2(4, 30)\ncompare2(5, 30)\ncompare2(6, 30)\ncompare2(7, 20)\ncompare2(8, 30)\ncompare2(9, 30)\ncompare2(10, 30)\ncompare2(11, 30)\ncompare2(12, 30)\ncompare2(13, 30)\ncompare2(14, 30)\n# n = 35\ncompare2(1, 35)\ncompare2(2, 35)\ncompare2(3, 35)\ncompare2(4, 35)\ncompare2(5, 35)\ncompare2(6, 35)\ncompare2(7, 35)\ncompare2(8, 35)\ncompare2(9, 35)\ncompare2(10, 35)\ncompare2(11, 35)\ncompare2(12, 35)\ncompare2(13, 35)\ncompare2(14, 35)\n\n# comparing the two functions, we can see that naivelog has an error > 0 whereass mylog has an error < 0. For naivelog as the n increases, the error gets smaller. Whereas for mylog, as the n increases, the error gets larger.",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": 184,
+      "outputs": [
+        {
+          "name": "stdout",
+          "text": "The log of 1 using naivelog when n = 20 is 0.0\nThe log of 1 using mylog when n = 20 is 0.0\nThe log of 1 using log is 0.0\nThe error when x = 1 and n = 20 of naivelog is 0.0 and mylog is 0.0\nNone\nThe log of 2 using naivelog when n = 20 is 0.6931474097073078\nThe log of 2 using mylog when n = 20 is 0.6931474096578456\nThe log of 2 using log is 0.6931471805599453\nThe error when x = 2 and n = 20 of naivelog is -3.3058976355384264e-07 and mylog is -3.30518404665729e-07\nNone\nThe log of 3 using naivelog when n = 20 is 1.0986128642689437\nThe log of 3 using mylog when n = 20 is 1.0986128641864232\nThe log of 3 using log is 1.0986122886681098\nThe error when x = 3 and n = 20 of naivelog is -5.239344578815214e-07 and mylog is -5.2385934454465e-07\nNone\nThe log of 4 using naivelog when n = 20 is 1.3862952776253223\nThe log of 4 using mylog when n = 20 is 1.3862952775116937\nThe log of 4 using log is 1.3862943611198906\nThe error when x = 4 and n = 20 of naivelog is -6.61118920680803e-07 and mylog is -6.610369549271926e-07\nNone\nThe log of 5 using naivelog when n = 20 is 1.6094391476362944\nThe log of 5 using mylog when n = 20 is 1.6094391475814431\nThe log of 5 using log is 1.6094379124341003\nThe error when x = 5 and n = 20 of naivelog is -7.674742744285301e-07 and mylog is -7.674401934402287e-07\nNone\nThe log of 6 using naivelog when n = 20 is 1.791761000175029\nThe log of 6 using mylog when n = 20 is 1.791761000067892\nThe log of 6 using log is 1.791759469228055\nThe error when x = 6 and n = 20 of naivelog is -8.544377749216803e-07 and mylog is -8.543779806424785e-07\nNone\nThe log of 7 using naivelog when n = 20 is 1.9459119546227157\nThe log of 7 using mylog when n = 20 is 1.9459119546319477\nThe log of 7 using log is 1.9459101490553132\nThe error when x = 7 and n = 20 of naivelog is -9.278780951711867e-07 and mylog is -9.278828394542378e-07\nNone\nThe log of 8 using naivelog when n = 20 is 2.079443603521213\nThe log of 8 using mylog when n = 20 is 2.0794436035618467\nThe log of 8 using log is 2.0794415416798357\nThe error when x = 8 and n = 20 of naivelog is -9.915361099894983e-07 and mylog is -9.915556506776099e-07\nNone\nThe log of 9 using naivelog when n = 20 is 2.197226879419759\nThe log of 9 using mylog when n = 20 is 2.197226879410278\nThe log of 9 using log is 2.1972245773362196\nThe error when x = 9 and n = 20 of naivelog is -1.0477233702449249e-06 and mylog is -1.0477190553193417e-06\nNone\nThe log of 10 using naivelog when n = 20 is 2.302587621146813\nThe log of 10 using mylog when n = 20 is 2.3025876211379237\nThe log of 10 using log is 2.302585092994046\nThe error when x = 10 and n = 20 of naivelog is -1.0979627961746972e-06 and mylog is -1.0979589355861175e-06\nNone\nThe log of 11 using naivelog when n = 20 is 2.3978980146348476\nThe log of 11 using mylog when n = 20 is 2.3978980145672644\nThe log of 11 using log is 2.3978952727983707\nThe error when x = 11 and n = 20 of naivelog is -1.1434346228856847e-06 and mylog is -1.143406438472012e-06\nNone\nThe log of 12 using naivelog when n = 20 is 2.484909594291821\nThe log of 12 using mylog when n = 20 is 2.4849095941458437\nThe log of 12 using log is 2.4849066497880004\nThe error when x = 12 and n = 20 of naivelog is -1.1849555076923384e-06 and mylog is -1.1848967620439413e-06\nNone\nThe log of 13 using naivelog when n = 20 is 2.5649524945765734\nThe log of 13 using mylog when n = 20 is 2.5649524945591704\nThe log of 13 using log is 2.5649493574615367\nThe error when x = 13 and n = 20 of naivelog is -1.2230709458287302e-06 and mylog is -1.2230641609119423e-06\nNone\nThe log of 14 using naivelog when n = 20 is 2.639060650486499\nThe log of 14 using mylog when n = 20 is 2.639060650609367\nThe log of 14 using log is 2.6390573296152584\nThe error when x = 14 and n = 20 of naivelog is -1.2583550964950764e-06 and mylog is -1.2584016540050885e-06\nNone\nThe log of 1 using naivelog when n = 25 is 0.0\nThe log of 1 using mylog when n = 25 is 0.0\nThe log of 1 using log is 0.0\nThe error when x = 1 and n = 25 of naivelog is 0.0 and mylog is 0.0\nNone\nThe log of 2 using naivelog when n = 25 is 0.6931471899151802\nThe log of 2 using mylog when n = 25 is 0.6931471877192531\nThe log of 2 using log is 0.6931471805599453\nThe error when x = 2 and n = 25 of naivelog is -1.3496751025539225e-08 and mylog is -1.0328697878378709e-08\nNone\nThe log of 3 using naivelog when n = 25 is 1.0986123085021973\nThe log of 3 using mylog when n = 25 is 1.098612306653051\nThe log of 3 using log is 1.0986122886681098\nThe error when x = 3 and n = 25 of naivelog is -1.805376445184535e-08 and mylog is -1.6370599072582266e-08\nNone\nThe log of 4 using naivelog when n = 25 is 1.3862943947315216\nThe log of 4 using mylog when n = 25 is 1.386294389757122\nThe log of 4 using log is 1.3862943611198906\nThe error when x = 4 and n = 25 of naivelog is -2.4245666704464766e-08 and mylog is -2.065739591692874e-08\nNone\nThe log of 5 using naivelog when n = 25 is 1.6094379499554634\nThe log of 5 using mylog when n = 25 is 1.6094379510324364\nThe log of 5 using log is 1.6094379124341003\nThe error when x = 5 and n = 25 of naivelog is -2.331333370348962e-08 and mylog is -2.398249462416897e-08\nNone\nThe log of 6 using naivelog when n = 25 is 1.7917595207691193\nThe log of 6 using mylog when n = 25 is 1.791759517066774\nThe log of 6 using log is 1.791759469228055\nThe error when x = 6 and n = 25 of naivelog is -2.8765615692595227e-08 and mylog is -2.669929742678075e-08\nNone\nThe log of 7 using naivelog when n = 25 is 1.9459102004766464\nThe log of 7 using mylog when n = 25 is 1.94591020547955\nThe log of 7 using log is 1.9459101490553132\nThe error when x = 7 and n = 25 of naivelog is -2.642533788953926e-08 and mylog is -2.899632178072253e-08\nNone\nThe log of 8 using naivelog when n = 25 is 2.0794416069984436\nThe log of 8 using mylog when n = 25 is 2.0794416061136065\nThe log of 8 using log is 2.0794415416798357\nThe error when x = 8 and n = 25 of naivelog is -3.1411610543805566e-08 and mylog is -3.098609384869789e-08\nNone\nThe log of 9 using naivelog when n = 25 is 2.197224646806717\nThe log of 9 using mylog when n = 25 is 2.1972246492759853\nThe log of 9 using log is 2.1972245773362196\nThe error when x = 9 and n = 25 of naivelog is -3.161738589277508e-08 and mylog is -3.274119834727824e-08\nNone\nThe log of 10 using naivelog when n = 25 is 2.302585169672966\nThe log of 10 using mylog when n = 25 is 2.3025851719984853\nThe log of 10 using log is 2.302585092994046\nThe error when x = 10 and n = 25 of naivelog is -3.330123187873979e-08 and mylog is -3.431119209247236e-08\nNone\nThe log of 11 using naivelog when n = 25 is 2.397895358502865\nThe log of 11 using mylog when n = 25 is 2.3978953584785843\nThe log of 11 using log is 2.3978952727983707\nThe error when x = 11 and n = 25 of naivelog is -3.574155015878071e-08 and mylog is -3.5731424371460476e-08\nNone\nThe log of 12 using naivelog when n = 25 is 2.484906740486622\nThe log of 12 using mylog when n = 25 is 2.4849067417991146\nThe log of 12 using log is 2.4849066497880004\nThe error when x = 12 and n = 25 of naivelog is -3.6499810369079924e-08 and mylog is -3.702799631974199e-08\nNone\nThe log of 13 using naivelog when n = 25 is 2.5649494528770447\nThe log of 13 using mylog when n = 25 is 2.564949455495763\nThe log of 13 using log is 2.5649493574615367\nThe error when x = 13 and n = 25 of naivelog is -3.71997628965092e-08 and mylog is -3.822072579529431e-08\nNone\nThe log of 14 using naivelog when n = 25 is 2.63905743509531\nThe log of 14 using mylog when n = 25 is 2.639057433396243\nThe log of 14 using log is 2.6390573296152584\nThe error when x = 14 and n = 25 of naivelog is -3.9968836834433365e-08 and mylog is -3.932502091949966e-08\nNone\nThe log of 1 using naivelog when n = 30 is 0.0\nThe log of 1 using mylog when n = 30 is 0.0\nThe log of 1 using log is 0.0\nThe error when x = 1 and n = 30 of naivelog is 0.0 and mylog is 0.0\nNone\nThe log of 2 using naivelog when n = 30 is 0.6931471824645996\nThe log of 2 using mylog when n = 30 is 0.6931471807836737\nThe log of 2 using log is 0.6931471805599453\nThe error when x = 2 and n = 30 of naivelog is -2.747835346613685e-09 and mylog is -3.2277180869933465e-10\nNone\nThe log of 3 using naivelog when n = 30 is 1.0986120700836182\nThe log of 3 using mylog when n = 30 is 1.098612289230139\nThe log of 3 using log is 1.0986122886681098\nThe error when x = 3 and n = 30 of naivelog is 1.9896417860303033e-07 and mylog is -5.115811262773945e-10\nNone\nThe log of 4 using naivelog when n = 30 is 1.3862943649291992\nThe log of 4 using mylog when n = 30 is 1.386294362014804\nThe log of 4 using log is 1.3862943611198906\nThe error when x = 4 and n = 30 of naivelog is -2.747835346613685e-09 and mylog is -6.455436173986693e-10\nNone\nThe log of 5 using naivelog when n = 30 is 1.6094377040863037\nThe log of 5 using mylog when n = 30 is 1.6094379136402983\nThe log of 5 using log is 1.6094379124341003\nThe error when x = 5 and n = 30 of naivelog is 1.2945376454799612e-07 and mylog is -7.494529742507892e-10\nNone\nThe log of 6 using naivelog when n = 30 is 1.7917594909667969\nThe log of 6 using mylog when n = 30 is 1.7917594707230153\nThe log of 6 using log is 1.791759469228055\nThe error when x = 6 and n = 30 of naivelog is -1.2132622872116333e-08 and mylog is -8.343532730744534e-10\nNone\nThe log of 7 using naivelog when n = 20 is 1.9459119546227157\nThe log of 7 using mylog when n = 20 is 1.9459119546319477\nThe log of 7 using log is 1.9459101490553132\nThe error when x = 7 and n = 20 of naivelog is -9.278780951711867e-07 and mylog is -9.278828394542378e-07\nNone\nThe log of 8 using naivelog when n = 30 is 2.079441547393799\nThe log of 8 using mylog when n = 30 is 2.0794415436933904\nThe log of 8 using log is 2.0794415416798357\nThe error when x = 8 and n = 30 of naivelog is -2.7478354000041273e-09 and mylog is -9.683151057553537e-10\nNone\nThe log of 9 using naivelog when n = 30 is 2.1972243785858154\nThe log of 9 using mylog when n = 30 is 2.197224579584337\nThe log of 9 using log is 2.1972245773362196\nThe error when x = 9 and n = 30 of naivelog is 9.04552070755925e-08 and mylog is -1.023162252554789e-09\nNone\nThe log of 10 using naivelog when n = 30 is 2.3025848865509033\nThe log of 10 using mylog when n = 30 is 2.3025850954629337\nThe log of 10 using log is 2.302585092994046\nThe error when x = 10 and n = 30 of naivelog is 8.965711764959947e-08 and mylog is -1.0722243309964945e-09\nNone\nThe log of 11 using naivelog when n = 30 is 2.397895097732544\nThe log of 11 using mylog when n = 30 is 2.397895275475875\nThe log of 11 using log is 2.3978952727983707\nThe error when x = 11 and n = 30 of naivelog is 7.300812037541743e-08 and mylog is -1.116606079822727e-09\nNone\nThe log of 12 using naivelog when n = 30 is 2.4849066734313965\nThe log of 12 using mylog when n = 30 is 2.48490665266335\nThe log of 12 using log is 2.4849066497880004\nThe error when x = 12 and n = 30 of naivelog is -9.514802550763986e-09 and mylog is -1.1571258567528197e-09\nNone\nThe log of 13 using naivelog when n = 30 is 2.5649492740631104\nThe log of 13 using mylog when n = 30 is 2.564949360525109\nThe log of 13 using log is 2.5649493574615367\nThe error when x = 13 and n = 30 of naivelog is 3.251464834751604e-08 and mylog is -1.1943986550020217e-09\nNone\nThe log of 14 using naivelog when n = 30 is 2.639057159423828\nThe log of 14 using mylog when n = 30 is 2.639057332858417\nThe log of 14 using log is 2.6390573296152584\nThe error when x = 14 and n = 30 of naivelog is 6.448947825884697e-08 and mylog is -1.2289079870091597e-09\nNone\nThe log of 1 using naivelog when n = 35 is 0.0\nThe log of 1 using mylog when n = 35 is 0.0\nThe log of 1 using log is 0.0\nThe error when x = 1 and n = 35 of naivelog is 0.0 and mylog is 0.0\nNone\nThe log of 2 using naivelog when n = 35 is 0.693145751953125\nThe log of 2 using mylog when n = 35 is 0.6931471805669369\nThe log of 2 using log is 0.6931471805599453\nThe error when x = 2 and n = 35 of naivelog is 2.06104397500709e-06 and mylog is -1.0086789203887223e-11\nNone\nThe log of 3 using naivelog when n = 35 is 1.0986099243164062\nThe log of 3 using mylog when n = 35 is 1.0986122886856735\nThe log of 3 using log is 1.0986122886681098\nThe error when x = 3 and n = 35 of naivelog is 2.1521256660969114e-06 and mylog is -1.598719441857251e-11\nNone\nThe log of 4 using naivelog when n = 35 is 1.38629150390625\nThe log of 4 using mylog when n = 35 is 1.3862943611478569\nThe log of 4 using log is 1.3862943611198906\nThe error when x = 4 and n = 35 of naivelog is 2.06104397500709e-06 and mylog is -2.0173418236449254e-11\nNone\nThe log of 5 using naivelog when n = 35 is 1.60943603515625\nThe log of 5 using mylog when n = 35 is 1.6094379124717946\nThe log of 5 using log is 1.6094379124341003\nThe error when x = 5 and n = 35 of naivelog is 1.166418310255051e-06 and mylog is -2.3420780535152665e-11\nNone\nThe log of 6 using naivelog when n = 35 is 1.7917556762695312\nThe log of 6 using mylog when n = 35 is 1.7917594692747727\nThe log of 6 using log is 1.791759469228055\nThe error when x = 6 and n = 35 of naivelog is 2.1168904581491823e-06 and mylog is -2.6073667581700672e-11\nNone\nThe log of 7 using naivelog when n = 35 is 1.9459075927734375\nThe log of 7 using mylog when n = 35 is 1.945910149110417\nThe log of 7 using log is 1.9459101490553132\nThe error when x = 7 and n = 35 of naivelog is 1.3136690185684447e-06 and mylog is -2.831769977045022e-11\nNone\nThe log of 8 using naivelog when n = 35 is 2.079437255859375\nThe log of 8 using mylog when n = 35 is 2.0794415417427596\nThe log of 8 using log is 2.0794415416798357\nThe error when x = 8 and n = 35 of naivelog is 2.0610439749536997e-06 and mylog is -3.025999387856956e-11\nNone\nThe log of 9 using naivelog when n = 35 is 2.1972198486328125\nThe log of 9 using mylog when n = 35 is 2.1972245774064736\nThe log of 9 using log is 2.1972245773362196\nThe error when x = 9 and n = 35 of naivelog is 2.1521256660969114e-06 and mylog is -3.197398460972609e-11\nNone\nThe log of 10 using naivelog when n = 35 is 2.302581787109375\nThe log of 10 using mylog when n = 35 is 2.3025850930711984\nThe log of 10 using log is 2.302585092994046\nThe error when x = 10 and n = 35 of naivelog is 1.4357274703808925e-06 and mylog is -3.350690788384713e-11\nNone\nThe log of 11 using naivelog when n = 35 is 2.39788818359375\nThe log of 11 using mylog when n = 35 is 2.39789527288204\nThe log of 11 using log is 2.3978952727983707\nThe error when x = 11 and n = 35 of naivelog is 2.956427956253585e-06 and mylog is -3.4892898246793524e-11\nNone\nThe log of 12 using naivelog when n = 35 is 2.4849014282226562\nThe log of 12 using mylog when n = 35 is 2.4849066498778574\nThe log of 12 using log is 2.4849066497880004\nThe error when x = 12 and n = 35 of naivelog is 2.1013124756819493e-06 and mylog is -3.616112127541202e-11\nNone\nThe log of 13 using naivelog when n = 35 is 2.5649490356445312\nThe log of 13 using mylog when n = 35 is 2.5649493575572766\nThe log of 13 using log is 2.5649493574615367\nThe error when x = 13 and n = 35 of naivelog is 1.2546719667288302e-07 and mylog is -3.7326218627059634e-11\nNone\nThe log of 14 using naivelog when n = 35 is 2.6390533447265625\nThe log of 14 using mylog when n = 35 is 2.639057329716611\nThe log of 14 using log is 2.6390573296152584\nThe error when x = 14 and n = 35 of naivelog is 1.509966703333429e-06 and mylog is -3.84048890753034e-11\nNone\n",
+          "output_type": "stream"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": "#Q3\nfrom math import factorial\nfrom math import pi\ndef myexp(x):\n    n = 15\n    y = 1 #first term in the taylor series for e^x\n    for i in range(n):\n        y += x**(i+1)/factorial(i+1) #adding the next terms of the taylor series\n    return y\n\ndef resize_angle(x):\n    # a function to resize the angle to be in [0,pi/2]\n    new_angle = x\n    if abs(new_angle) > (pi/2):\n        while abs(new_angle) > (pi/2):\n            new_angle = new_angle/(pi/2)\n    return new_angle\n\ndef mysine(x):\n    angle = x\n    if abs(angle) > (pi/2):\n        angle = resize_angle(angle)\n    n = 15\n    y = 0 # the first term of the taylor series for sin(x)\n    for i in range(n):\n        y += ((-1)**i)*(angle**((2*i)+1))/(factorial((2*i)+1)) # adding the next terms of the series\n    return y\n\ndef mycosine(x):\n    angle = x\n    if abs(angle) > (pi/2):\n        angle = resize_angle(angle)\n    if angle == (pi/2):\n        return 0.0\n    n = 15\n    y = 0 # first term\n    for i in range(n):\n        y+= ((-1)**i)*(angle**(2*i))/(factorial(2*i)) # adding the rest of the terms\n    return y",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# Q3 examples\n\n# Exp\n\nprint(myexp(0)) \n# returns 1\nprint(myexp(1)) \n# returns 2.718281828458995\nprint(myexp(2))\n# returns 7.389056095384136\n\n# Sin\n\nprint(mysine(0.5))\n# returns 0.479425538604203\nprint(mysine(-0.5))\n# returns -0.479425538604203\nprint(mysine(0.1))\n# returns 0.09983341664682817\nprint(mysine(0.0))\n# returns 0.0\nprint(mysine(pi/2))\nprint(mysine(1.6))\n# returns 0.9995736030415051\n\nprint(mysine(pi))\n\n# Cos\n\nprint(mycosine(0.5))\n# returns 0.8775825618903728\nprint(mycosine(-0.5))\n# returns 0.8775825618903728\nprint(mycosine(0.1))\n# returns 0.9950041652780258\nprint(mycosine(0.0))\n# returns 1.0\nprint(mycosine(1.6))\n# returns -0.029199522301288916\nprint(mycosine(pi/2))\n# returns 0.0",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "\n",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# Q4\ndef myarctan(x):\n    z = x\n    if abs(z) > (pi/2):\n        z = resize_angle(z)\n    b = mycosine(z)\n    a = mysine(z)\n    if a == 0.0:\n        return \"Undefined\"\n    else:\n        y = b/a\n        return y\n    ",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# Q4 examples\n\nfrom math import pi\n\n# normal cases\nprint(myarctan(0.1))\nprint(myarctan(1.6))\n\n# edges\nprint(myarctan(0.0))\nprint(myarctan(pi/2)) \n\n# negative\nprint(myarctan(0.5))\nprint(myarctan(-0.5))\n\n# x > pi/2\nprint(myarctan(pi)) # not right!\n\n\n",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# Part 2\n# Q1\nfrom math import pi\n\n#prestored values of arctan from 0<=x<=pi/2\narctan_table = {0.0: myarctan(0.0),0.1: myarctan(0.1),0.2: myarctan(0.2),0.3: myarctan(0.3),0.4: myarctan(0.4),0.5: myarctan(0.5),0.6: myarctan(0.6),0.7: myarctan(0.7),0.8: myarctan(0.8),0.9: myarctan(0.9),1.0: myarctan(1.0),1.1: myarctan(1.1),1.2: myarctan(1.2),1.3: myarctan(1.3),1.4: myarctan(1.4),1.5: myarctan(1.5),pi/2: myarctan(pi/2)}\n\ndef myarctan2(x):\n    a = abs(x)\n    if a > pi/2:\n        a =resize_angle(a)\n        \n    for i in arctan_table:\n        if a == i:\n            if x < 0:\n                return arctan_table[i]*(-1)\n            else:\n                return arctan_table[i]\n        elif a < i:\n            c = a/i\n            if x < 0:\n                return arctan_table[i]*(-1)\n            else:\n                return arctan_table[i]/c\n           \n        \n",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "#Q3\n\ndef mytan2(x):\n    return (1/myarctan2(x))\n\n\n#Q4\n\nfrom math import sqrt\n\ndef myarcsin2(x):\n    # by trig idenities\n    if x < 0:\n        a = abs(x)\n        y = sqrt(1+(mytan2(a)**2))\n        y = (-1)*y\n    else:\n        y = sqrt(1+(mytan2(x)**2))\n   \n    return y\n\n# Q2\n\ndef mysin2(x):\n    y = 1/myarcsin2(x)\n    return y\n\ndef mycos2(x):\n    y = sqrt(1-(mysin2(x)**2))\n    return y\n",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "# examples\n\n#arctan\n# end points of 0 <= x <= pi/2\nprint(myarctan2(pi/2))\nprint(myarctan2(0.0))\n\n# other\nprint(myarctan2(0.1))\nprint(myarctan2(0.2)) \nprint(myarctan2(0.3))\n\n# when x isn't in the pre-loaded index\nprint(myarctan2(0.23))\nprint(myarctan2(0.12))\n\n# negative case\nprint(myarctan2(0.6))\nprint(myarctan2(-0.6))\n\n# when x > pi/2\n\n#tan\n\n#arcsin\n\n# negative case\nprint(myarcsin2(0.1))\nprint(myarcsin2(-0.1))\n\n#sin\n\n# negative case\nprint(mysin2(0.1))\nprint(mysin2(-0.1))\n\n#cos\n\n# negative case\nprint(mycos2(0.1))\nprint(mycos2(-0.1))",
+      "metadata": {
+        "trusted": true
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": "",
+      "metadata": {},
+      "execution_count": null,
+      "outputs": []
+    }
+  ]
+}
